@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Catégorie : {{ category.name }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Catégorie</h1>
+
+    <div class="card mx-auto" style="max-width: 500px;">
+        <div class="card-body">
+            <h5 class="card-title text-center">{{ category.name }}</h5>
+        </div>
+
+        <div class="card-footer d-flex justify-content-between flex-wrap gap-2">
+            <a href="{{ path('app_category_index') }}" class="btn btn-outline-secondary w-100">
+                ← Retour à la liste
+            </a>
+            <a href="{{ path('app_category_edit', {'id': category.id}) }}" class="btn btn-outline-warning w-100">
+                ✏️ Modifier
+            </a>
+            {{ include('category/_delete_form.html.twig') }}
+        </div>
+    </div>
+</div>
+{% endblock %}

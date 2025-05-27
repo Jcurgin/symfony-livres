@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ book.title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">{{ book.title }}</h1>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                {% if book.coverImage %}
+                    <img src="{{ asset('uploads/covers/' ~ book.coverImage) }}" class="card-img-top" alt="{{ book.title }}">
+                {% endif %}
+
+                <div class="card-body">
+                    <h5 class="card-title">{{ book.title }}</h5>
+                    <p class="text-muted"><strong>Auteur :</strong> {{ book.author }}</p>
+                    <p><strong>Date de publication :</strong> {{ book.publicationDate ? book.publicationDate|date('Y-m-d') : 'Non précisée' }}</p>
+                    <p class="card-text">{{ book.description }}</p>
+                </div>
+
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <a href="{{ path('app_book_index') }}" class="btn btn-secondary">← Retour</a>
+
+                        <div class="d-flex gap-2 ms-auto">
+                            {% if previousBook %}
+                                <a href="{{ path('app_book_show', {'id': previousBook.id}) }}"
+                                class="btn btn-outline-secondary text-truncate"
+                                style="max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    ← {{ previousBook.title }}
+                                </a>
+                            {% endif %}
+
+                            {% if nextBook %}
+                                <a href="{{ path('app_book_show', {'id': nextBook.id}) }}"
+                                class="btn btn-outline-secondary text-truncate"
+                                style="max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    {{ nextBook.title }} →
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+    {% if app.user and not app.user.books.contains(book) %}
+        <form method="post" action="{{ path('book_add_to_library', {'id': book.id}) }}" class="mt-3">
+            <button class="btn btn-outline-success w-100">Ajouter à ma bibliothèque</button>
+        </form>
+    {% endif %}
+
+    {% if is_granted('ROLE_ADMIN') %}
+        <div class="mt-3 d-flex justify-content-between flex-wrap gap-2">
+            <a href="{{ path('app_book_edit', {'id': book.id}) }}" class="btn btn-warning">Modifier</a>
+            {{ include('book/_delete_form.html.twig') }}
+        </div>
+    {% endif %}
+</div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Book index{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+
+    <h1 class="text-center mb-4">Accueil</h1>
+
+    {% if is_granted('ROLE_ADMIN') %}
+        <div class="d-flex justify-content-center gap-3 mb-4">
+            <a href="{{ path('app_book_add') }}" class="btn btn-primary">Ajouter un livre</a>
+            <a href="{{ path('app_category_index') }}" class="btn btn-outline-info">Catégories</a>
+        </div>
+    {% endif %}
+
+    <form method="get" class="mb-4 text-center">
+        <div class="d-inline-block">
+            <select name="category" class="form-select" onchange="this.form.submit()">
+                <option value="">Toutes les catégories</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}" {% if category.id == selectedCategory %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </form>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
+        {% for book in books %}
+            <div class="col">
+                <div class="card h-100">
+                    {% if book.coverImage %}
+                        <img src="{{ asset('uploads/covers/' ~ book.coverImage) }}" class="card-img-top" alt="{{ book.title }}">
+                    {% endif %}
+
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ book.title }}</h5>
+
+                        {% if book.category %}
+                            <p class="text-secondary mb-1"><i class="bi bi-tag"></i> {{ book.category.name }}</p>
+                        {% endif %}
+
+                        <p class="card-text text-muted small">
+                            {{ book.description|length > 120 ? book.description[:120] ~ '…' : book.description }}
+                        </p>
+
+                        <div class="mt-auto">
+                            <div class="d-flex gap-2 flex-wrap align-items-center">
+                                <a href="{{ path('app_book_show', {'id': book.id}) }}" class="btn btn-sm btn-primary" title="Voir">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+
+                                {% if app.user and not app.user.books.contains(book) %}
+                                    <form method="post" action="{{ path('book_add_to_library', {'id': book.id}) }}">
+                                        <button class="btn btn-sm btn-outline-success" title="Ajouter à ma bibliothèque">
+                                            <i class="bi bi-bookmark-plus"></i>
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <div class="mt-2">
+                                    <a href="{{ path('app_book_edit', {'id': book.id}) }}" class="btn btn-sm btn-warning w-100" title="Modifier">
+                                        <i class="bi bi-pencil-square"></i> Modifier
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <p>Aucun livre trouvé.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

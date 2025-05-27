@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un livre{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Ajouter un nouveau livre</h1>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    {{ include('book/_form.html.twig', {'button_label': 'Ajouter'}) }}
+                </div>
+            </div>
+
+            <div class="text-end mt-4">
+                <a href="{{ path('app_book_index') }}" class="btn btn-secondary">
+                    ← Retour à la liste
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
