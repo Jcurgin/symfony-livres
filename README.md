@@ -18,8 +18,8 @@ Cette mini-application Symfony permet la gestion d'une collection de livres avec
 ## 📦 Installation
 
 ```bash
-git clone https://github.com/votre-utilisateur/nom-du-repo.git
-cd nom-du-repo
+git clone https://github.com/Jcurgin/symfony-livres.git
+cd symfony-livres
 composer install
 cp .env .env.local
 # Modifier les informations de connexion BDD dans .env.local si nécessaire
@@ -80,13 +80,22 @@ Un utilisateur admin est préchargé via les fixtures :
 - **Gestion des rôles** : pour protéger les routes sensibles (`ROLE_ADMIN`).
 - **Table pivot `book_user`** : pour que plusieurs utilisateurs puissent ajouter les mêmes livres sans duplication.
 
+🧩 Bundles utilisés
+
+Bundle	Description
+symfony/security-bundle	           Authentification et gestion des rôles
+symfony/form	                   Création et gestion de formulaires
+symfony/validator	           Validation via les contraintes Assert
+symfony/asset	                   Gestion des fichiers statiques et uploadés
+symfony/maker-bundle (dev)	   Générateur de code pour les entités, contrôleurs, etc.
+doctrine/doctrine-fixtures-bundle  Création de données de test (fixtures)
+knplabs/knp-paginator-bundle	   Pagination des résultats (accueil, compte)
+
 
 ## evolution 
 ✅ Performance & bonnes pratiques
  Recherche par titre, auteur ou description.
  
- Pagination des livres (ex : KnpPaginator).
-
  Tri des livres (par titre, date, etc).
  
  Gestion avancée des rôles avec Voter pour affiner les permissions (ex. : seul un admin peut    modifier/supprimer un livre).
