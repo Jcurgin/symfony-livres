@@ -15,7 +15,7 @@ class BookFixtures extends Fixture
         $category->setName('Héroïque Fantaisie');
         $manager->persist($category);
 
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 20; $i++) {
             $book = new Book();
             $book->setTitle("Livre $i");
             $book->setAuthor("Auteur $i");

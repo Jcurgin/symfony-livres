@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
@@ -19,18 +20,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Assert\NotBlank(message: 'L’email est requis.')]
+    #[Assert\Email(message: 'L’adresse email "{{ value }}" n’est pas valide.')]
+    #[Assert\Length(max: 180)]
     private ?string $email = null;
 
     /**
      * @var list<string> The user roles
      */
     #[ORM\Column]
+    #[Assert\NotNull]
     private array $roles = [];
 
     /**
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\NotBlank(message: 'Le mot de passe est requis.')]
+    #[Assert\Length(min: 6, minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caractères.')]
     private ?string $password = null;
 
     /**
@@ -61,32 +68,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
     public function getUserIdentifier(): string
     {
         return $this->email;
     }
 
-
-    /**
-     * @see UserInterface
-     */
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
     }
 
-    /**
-     * @param list<string> $roles
-     */
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
@@ -94,9 +88,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
     public function getPassword(): ?string
     {
         return $this->password;
@@ -109,18 +100,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @see UserInterface
-     */
     public function eraseCredentials(): void
     {
-        // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
     }
 
-    /**
-     * @return Collection<int, Book>
-     */
     public function getBooks(): Collection
     {
         return $this->books;
@@ -139,9 +123,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeBook(Book $book): static
     {
         if ($this->books->removeElement($book)) {
-            // set the owning side to null (unless already changed)
             $book->removeUser($this);
-
         }
 
         return $this;

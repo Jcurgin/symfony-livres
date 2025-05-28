@@ -11,7 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
-
+use Symfony\Component\Validator\Constraints\File;
 
 class BookType extends AbstractType
 {
@@ -25,7 +25,6 @@ class BookType extends AbstractType
                 'html5' => true,
             ])
             ->add('coverImage', FileType::class, [
-                'label' => 'Image de couverture (jpg/png)',
                 'mapped' => false,
                 'required' => false,
             ])

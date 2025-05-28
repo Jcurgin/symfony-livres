@@ -15,36 +15,41 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/book')]
 final class BookController extends AbstractController
 {
     #[Route(name: 'app_book_index', methods: ['GET'])]
-    public function index(Request $request, EntityManagerInterface $em, BookRepository $bookRepository): Response
-    {
+    public function index(
+        Request $request,
+        EntityManagerInterface $em,
+        BookRepository $bookRepository,
+        PaginatorInterface $paginator
+    ): Response {
         $categoryId = $request->query->get('category');
+        $qb = $bookRepository->createQueryBuilder('b')
+            ->leftJoin('b.category', 'c');
 
         if ($categoryId) {
-            $books = $bookRepository->createQueryBuilder('b')
-                ->join('b.category', 'c')
-                ->where('c.id = :id')
-                ->setParameter('id', $categoryId)
-                ->getQuery()
-                ->getResult();
-        } else {
-            $books = $bookRepository->findAll();
+            $qb->where('c.id = :id')->setParameter('id', $categoryId);
         }
+
+        $pagination = $paginator->paginate(
+            $qb->getQuery(),
+            $request->query->getInt('page', 1),
+            8
+        );
 
         $categories = $em->getRepository(Category::class)->findAll();
 
         return $this->render('book/index.html.twig', [
-            'books' => $books,
+            'books' => $pagination,
             'categories' => $categories,
             'selectedCategory' => $categoryId,
         ]);
-
     }
-
+    
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/add', name: 'app_book_add', methods: ['GET', 'POST'])]
     public function add(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
@@ -111,6 +116,7 @@ final class BookController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}/edit', name: 'app_book_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Book $book, EntityManagerInterface $em, SluggerInterface $slugger): Response
     {
